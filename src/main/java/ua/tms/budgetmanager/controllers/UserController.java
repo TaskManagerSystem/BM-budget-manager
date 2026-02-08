@@ -20,19 +20,19 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createUser(@RequestBody CreateUserDto userDto) {
+    public ResponseEntity<?> createUser(@RequestBody final CreateUserDto userDto) {
         return ResponseEntity.ok(userService.createUser(userDto));
     }
 
     @PutMapping("/update/{userId}")
     @Secured(value = {"ROLE_ADMIN", "ROLE_MANAGER"})
-    public ResponseEntity<?> updateUser(@RequestBody CreateUserDto userDto, @PathVariable Long userId) {
-        return ResponseEntity.ok(userService.updateUser(userDto));
+    public ResponseEntity<?> updateUser(@RequestBody final CreateUserDto userDto, @PathVariable final Long userId) {
+        return ResponseEntity.ok(userService.updateUser(userDto, userId));
     }
 
     @DeleteMapping("/delete/{userId}")
     @Secured(value = {"ROLE_ADMIN"})
-    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+    public ResponseEntity<?> deleteUser(@PathVariable final Long userId) {
         return ResponseEntity.ok(userService.deleteUser(userId));
     }
 }

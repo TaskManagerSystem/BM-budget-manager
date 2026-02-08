@@ -24,7 +24,7 @@ public class UserService {
     private final UserMapper userMapper;
 
     @Transactional
-    public UserResponseDto createUser(CreateUserDto userDto) {
+    public UserResponseDto createUser(final CreateUserDto userDto) {
         if (isUserExist(userDto.getUsername())) {
             throw new EntityExistsException("user with userName %s does exist".formatted(userDto.getUsername()));
         }
@@ -42,19 +42,19 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto updateUser(CreateUserDto userDto) {
+    public UserResponseDto updateUser(final CreateUserDto userDto, final Long userId) {
         if (!isUserExist(userDto.getUsername())) {
             throw new EntityExistsException("user with userName %s does not exist".formatted(userDto.getUsername()));
         }
 
-        User user = getUserById(userDto.getUserId());
+        User user = getUserById(userId);
 
         user.setUsername(userDto.getUsername());
         return userMapper.toDto(userRepository.save(user));
     }
 
     @Transactional
-    public String deleteUser(Long userId) {
+    public String deleteUser(final Long userId) {
         User userOptional = getUserById(userId);
 
         userRepository.delete(userOptional);
@@ -62,11 +62,11 @@ public class UserService {
     }
 
 
-    private boolean isUserExist(String username) {
+    private boolean isUserExist(final String username) {
         return userRepository.existsByUsername(username);
     }
 
-    private User getUserById(Long id) {
+    private User getUserById(final Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found by id %s".formatted(id)));
     }
