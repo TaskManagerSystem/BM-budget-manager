@@ -31,6 +31,6 @@ public class User {
     @Column
     private String password;
 
-    @OneToMany(mappedBy = "userId", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY)
     private List<Role> userRoles;
 }
