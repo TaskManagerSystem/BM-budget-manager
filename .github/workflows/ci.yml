@@ -22,9 +22,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2-cache-
       - name: Build with Maven
-        run: mvn clean install --settings .github/maven-settings.xml
-        env:
-          TOKEN: ${{ secrets.TOKEN }}
+        run: mvn clean install
 
       - name: Run tests
         run: mvn test
