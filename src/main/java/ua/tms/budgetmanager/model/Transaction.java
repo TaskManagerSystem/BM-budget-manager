@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -17,6 +19,7 @@ import ua.tms.budgetmanager.data.enumariton.TransactionCategory;
 import ua.tms.budgetmanager.data.enumariton.TransactionType;
 
 import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Data
@@ -41,6 +44,10 @@ public class Transaction implements Serializable {
   @Enumerated(STRING)
   @Column(name = "type", nullable = false)
   private TransactionType type;
+
+  @ManyToOne(fetch = LAZY)
+  @JoinColumn(name = "wallet_id", nullable = false)
+  private Wallet wallet;
 
   @Column(name = "description", length = 500)
   private String description;
