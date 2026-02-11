@@ -1,4 +1,4 @@
-package ua.tms.budgetmanager.model;
+package ua.tms.budgetmanager.data.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

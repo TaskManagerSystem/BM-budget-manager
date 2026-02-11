@@ -6,14 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.tms.budgetmanager.dto.CreateUserDto;
-import ua.tms.budgetmanager.dto.UserResponseDto;
-import ua.tms.budgetmanager.enums.RoleName;
+import ua.tms.budgetmanager.data.dto.CreateUserDto;
+import ua.tms.budgetmanager.data.dto.UserResponseDto;
+import ua.tms.budgetmanager.data.enumariton.RoleName;
 import ua.tms.budgetmanager.mapper.UserMapper;
-import ua.tms.budgetmanager.model.Role;
-import ua.tms.budgetmanager.model.User;
-import ua.tms.budgetmanager.repo.RoleRepository;
-import ua.tms.budgetmanager.repo.UserRepository;
+import ua.tms.budgetmanager.data.model.Role;
+import ua.tms.budgetmanager.data.model.User;
+import ua.tms.budgetmanager.repository.RoleRepository;
+import ua.tms.budgetmanager.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
