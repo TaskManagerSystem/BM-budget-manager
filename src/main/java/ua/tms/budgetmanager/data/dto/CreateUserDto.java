@@ -1,4 +1,4 @@
-package ua.tms.budgetmanager.dto;
+package ua.tms.budgetmanager.data.dto;
 
 import lombok.Data;
 
