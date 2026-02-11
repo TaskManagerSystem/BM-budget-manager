@@ -19,12 +19,12 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: category
+                  name: transaction_category
                   type: VARCHAR(50)
                   constraints:
                     nullable: false
               - column:
-                  name: type
+                  name: transaction_type
                   type: VARCHAR(20)
                   constraints:
                     nullable: false
