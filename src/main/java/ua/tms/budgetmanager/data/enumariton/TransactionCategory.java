@@ -5,7 +5,6 @@ import java.util.List;
 
 public enum TransactionCategory implements Serializable {
   // Incomes
-  INCOME,
   SALARY,
 
   // Expenses
@@ -20,8 +19,8 @@ public enum TransactionCategory implements Serializable {
 
   public static List<TransactionCategory> getCategoriesByTransactionType(TransactionType type) {
     return switch (type) {
-      case INCOME -> List.of(INCOME, SALARY, OTHER);
-      case EXPENSE -> List.of( LIVING, FOOD, TRANSPORT, ENTERTAINMENT, HEALTH, SHOPPING, OTHER);
+      case INCOME -> List.of(SALARY, OTHER);
+      case EXPENSE -> List.of(LIVING, FOOD, TRANSPORT, ENTERTAINMENT, HEALTH, SHOPPING, OTHER);
     };
   }
 }
