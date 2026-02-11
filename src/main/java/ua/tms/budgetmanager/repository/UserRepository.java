@@ -1,7 +1,7 @@
-package ua.tms.budgetmanager.repo;
+package ua.tms.budgetmanager.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ua.tms.budgetmanager.model.User;
+import ua.tms.budgetmanager.data.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByUsername(String username);

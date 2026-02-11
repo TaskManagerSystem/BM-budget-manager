@@ -1,4 +1,4 @@
-package ua.tms.budgetmanager.model;
+package ua.tms.budgetmanager.data.model;
 
 
 import jakarta.persistence.Column;
@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
-import ua.tms.budgetmanager.enums.RoleName;
+import ua.tms.budgetmanager.data.enumariton.RoleName;
 
 @Entity
 @Table(name = "roles")

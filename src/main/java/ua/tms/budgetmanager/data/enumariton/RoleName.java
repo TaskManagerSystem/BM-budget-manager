@@ -1,4 +1,4 @@
-package ua.tms.budgetmanager.enums;
+package ua.tms.budgetmanager.data.enumariton;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
