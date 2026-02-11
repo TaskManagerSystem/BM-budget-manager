@@ -35,12 +35,12 @@ public class Transaction implements Serializable {
   private BigDecimal amount;
 
   @Enumerated(STRING)
-  @Column(name = "transaction_category", nullable = false)
-  private TransactionCategory transactionCategory;
+  @Column(name = "category", nullable = false)
+  private TransactionCategory category;
 
   @Enumerated(STRING)
-  @Column(name = "transaction_type", nullable = false)
-  private TransactionType transactionType;
+  @Column(name = "type", nullable = false)
+  private TransactionType type;
 
   @Column(name = "description", length = 500)
   private String description;
