@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 1
+      id: 2
       author: Farion
       changes:
         - createTable:
@@ -33,6 +33,14 @@ databaseChangeLog:
                   type: VARCHAR(5)
                   constraints:
                     nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    foreignKeyName: fk_wallet_user
 
         - createTable:
             tableName: transactions
