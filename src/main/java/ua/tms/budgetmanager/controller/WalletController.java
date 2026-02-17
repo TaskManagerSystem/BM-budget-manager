@@ -36,7 +36,6 @@ public class WalletController {
     return ResponseEntity.ok(walletService.getWalletDetailsById(user.getId(), walletId));
   }
 
-
   @GetMapping("/total-balance")
   public ResponseEntity<?> getTotalBalanceByUser(@AuthenticationPrincipal final User user) {
     return ResponseEntity.ok(walletService.getTotalBalanceByUserId(user.getId()));
