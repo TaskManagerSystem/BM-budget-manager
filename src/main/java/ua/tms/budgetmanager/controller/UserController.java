@@ -18,13 +18,13 @@ import ua.tms.budgetmanager.service.userservice.UserService;
 public class UserController {
     private final UserService userService;
 
-    @PutMapping("/update/{userId}")
+    @PutMapping("/{userId}")
     @Secured(value = {"ROLE_ADMIN", "ROLE_MANAGER"})
     public ResponseEntity<?> updateUser(@RequestBody final CreateUserDto userDto, @PathVariable final Long userId) {
         return ResponseEntity.ok(userService.updateUser(userDto, userId));
     }
 
-    @DeleteMapping("/delete/{userId}")
+    @DeleteMapping("/{userId}")
     @Secured(value = {"ROLE_ADMIN"})
     public ResponseEntity<?> deleteUser(@PathVariable final Long userId) {
         return ResponseEntity.ok(userService.deleteUser(userId));
