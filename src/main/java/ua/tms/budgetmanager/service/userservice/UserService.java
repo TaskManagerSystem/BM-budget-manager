@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.tms.budgetmanager.data.dto.CreateUserDto;
 import ua.tms.budgetmanager.data.dto.UserResponseDto;
 import ua.tms.budgetmanager.data.enumariton.RoleName;
-import ua.tms.budgetmanager.mapper.UserMapper;
 import ua.tms.budgetmanager.data.model.Role;
 import ua.tms.budgetmanager.data.model.User;
+import ua.tms.budgetmanager.mapper.UserMapper;
 import ua.tms.budgetmanager.repository.RoleRepository;
 import ua.tms.budgetmanager.repository.UserRepository;
 
@@ -55,9 +55,9 @@ public class UserService {
 
     @Transactional
     public String deleteUser(final Long userId) {
-        User userOptional = getUserById(userId);
+        User user = getUserById(userId);
 
-        userRepository.delete(userOptional);
+        userRepository.delete(user);
         return "User with id %s deleted".formatted(userId);
     }
 

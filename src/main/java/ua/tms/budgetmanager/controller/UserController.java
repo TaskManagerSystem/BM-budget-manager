@@ -1,4 +1,4 @@
-package ua.tms.budgetmanager.controllers;
+package ua.tms.budgetmanager.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
