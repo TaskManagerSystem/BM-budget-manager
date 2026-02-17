@@ -11,7 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ua.tms.budgetmanager.data.dto.WalletDto;
+import ua.tms.budgetmanager.data.dto.wallet.WalletCreateDto;
+import ua.tms.budgetmanager.data.dto.wallet.WalletListDto;
 import ua.tms.budgetmanager.data.model.User;
 import ua.tms.budgetmanager.data.model.Wallet;
 import ua.tms.budgetmanager.mapper.WalletMapper;
@@ -34,7 +35,7 @@ import static ua.tms.budgetmanager.data.enumariton.WalletType.CASH;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Wallet Service Tests")
-class WalletServiceTest {
+class WalletServiceTest extends BaseUtilTest {
 
   @Mock
   private WalletRepository walletRepository;
@@ -47,105 +48,109 @@ class WalletServiceTest {
 
   private User testUser;
   private Wallet testWallet;
-  private WalletDto testWalletDto;
-  private final Long USER_ID = 1L;
-  private final Long WALLET_ID = 1L;
-  private final String WALLET_NAME = "Test Wallet";
-  private final BigDecimal WALLET_BALANCE = BigDecimal.valueOf(1000);
+  private WalletCreateDto testWalletCreateDto;
 
   @BeforeEach
   void setUp() {
     testUser = User.builder()
-        .id(USER_ID)
+        .id(userId)
         .username("testuser")
         .password("password")
         .build();
 
     testWallet = Wallet.builder()
-        .id(WALLET_ID)
-        .name(WALLET_NAME)
-        .balance(WALLET_BALANCE)
+        .id(walletId)
+        .name(walletName)
+        .balance(walletBalance)
         .walletType(CASH)
         .currency(USD)
         .user(testUser)
         .build();
 
-    testWalletDto = new WalletDto();
-    testWalletDto.setName(WALLET_NAME);
-    testWalletDto.setBalance(WALLET_BALANCE);
-    testWalletDto.setWalletType(CASH);
-    testWalletDto.setCurrency(USD);
+    testWalletCreateDto = new WalletCreateDto();
+    testWalletCreateDto.setName(walletName);
+    testWalletCreateDto.setBalance(walletBalance);
+    testWalletCreateDto.setWalletType(CASH);
+    testWalletCreateDto.setCurrency(USD);
   }
 
   @Test
   @DisplayName("Should return wallet when found by user ID and wallet ID")
   void getByUserIdAndWalletId_ShouldReturnWallet_WhenWalletExists() {
-    when(walletRepository.findByIdAndUserId(WALLET_ID, USER_ID))
+    when(walletRepository.findByIdAndUserId(walletId, userId))
         .thenReturn(Optional.of(testWallet));
 
-    Wallet result = walletService.getByUserIdAndWalletId(USER_ID, WALLET_ID);
+    Wallet result = walletService.getByUserIdAndWalletId(userId, walletId);
 
     assertNotNull(result);
-    assertEquals(WALLET_ID, result.getId());
-    assertEquals(WALLET_NAME, result.getName());
-    assertEquals(WALLET_BALANCE, result.getBalance());
-    verify(walletRepository, times(1)).findByIdAndUserId(WALLET_ID, USER_ID);
+    assertEquals(walletId, result.getId());
+    assertEquals(walletName, result.getName());
+    assertEquals(walletBalance, result.getBalance());
+    verify(walletRepository).findByIdAndUserId(walletId, userId);
   }
 
   @Test
   @DisplayName("Should throw EntityNotFoundException when wallet not found by user ID and wallet ID")
   void getByUserIdAndWalletId_ShouldThrowException_WhenWalletNotFound() {
-    when(walletRepository.findByIdAndUserId(WALLET_ID, USER_ID))
+    when(walletRepository.findByIdAndUserId(walletId, userId))
         .thenReturn(Optional.empty());
 
     EntityNotFoundException exception = assertThrows(
         EntityNotFoundException.class,
-        () -> walletService.getByUserIdAndWalletId(USER_ID, WALLET_ID)
+        () -> walletService.getByUserIdAndWalletId(userId, walletId)
     );
 
-    assertEquals("Wallet with id %s for user with id %s not found".formatted(WALLET_ID, USER_ID),
+    assertEquals("Wallet with id %s for user with id %s not found".formatted(walletId, userId),
         exception.getMessage());
-    verify(walletRepository, times(1)).findByIdAndUserId(WALLET_ID, USER_ID);
+    verify(walletRepository).findByIdAndUserId(walletId, userId);
   }
 
   @Test
   @DisplayName("Should create and return wallet DTO when creating wallet")
   void createWallet_ShouldReturnWalletDto_WhenWalletCreated() {
     Wallet expectedWallet = Wallet.builder()
-        .name(WALLET_NAME)
-        .balance(WALLET_BALANCE)
+        .name(walletName)
+        .balance(walletBalance)
         .walletType(CASH)
         .currency(USD)
         .user(testUser)
         .build();
 
-    when(walletMapper.toModel(testWalletDto, testUser)).thenReturn(expectedWallet);
+    when(walletMapper.toModel(testWalletCreateDto, testUser)).thenReturn(expectedWallet);
     when(walletRepository.save(expectedWallet)).thenReturn(testWallet);
-    when(walletMapper.toDto(testWallet)).thenReturn(testWalletDto);
+    
+    WalletListDto expectedListDto = new WalletListDto();
+    expectedListDto.setId(walletId);
+    expectedListDto.setName(walletName);
+    expectedListDto.setBalance(walletBalance);
+    expectedListDto.setWalletType(CASH);
+    expectedListDto.setCurrency(USD);
+    
+    when(walletMapper.toListDto(testWallet)).thenReturn(expectedListDto);
 
-    WalletDto result = walletService.createWallet(testUser, testWalletDto);
+    WalletListDto result = walletService.createWallet(testUser, testWalletCreateDto);
 
     assertNotNull(result);
-    assertEquals(WALLET_NAME, result.getName());
-    assertEquals(WALLET_BALANCE, result.getBalance());
+    assertEquals(walletName, result.getName());
+    assertEquals(walletBalance, result.getBalance());
     assertEquals(CASH, result.getWalletType());
     assertEquals(USD, result.getCurrency());
-    verify(walletMapper, times(1)).toModel(testWalletDto, testUser);
-    verify(walletRepository, times(1)).save(expectedWallet);
-    verify(walletMapper, times(1)).toDto(testWallet);
+    verify(walletMapper).toModel(testWalletCreateDto, testUser);
+    verify(walletRepository).save(expectedWallet);
+    verify(walletMapper).toListDto(testWallet);
   }
 
   @Test
   @DisplayName("Should update and return wallet DTO when updating wallet")
   void updateWallet_ShouldReturnUpdatedWalletDto_WhenWalletExists() {
-    WalletDto updatedWalletDto = new WalletDto();
-    updatedWalletDto.setName("Updated Wallet");
-    updatedWalletDto.setBalance(BigDecimal.valueOf(2000));
-    updatedWalletDto.setWalletType(CARD);
-    updatedWalletDto.setCurrency(EUR);
+    WalletCreateDto updatedDto = new WalletCreateDto();
+    updatedDto.setName("Updated Wallet");
+    updatedDto.setBalance(BigDecimal.valueOf(2000));
+    updatedDto.setWalletType(CARD);
+    updatedDto.setCurrency(EUR);
 
     Wallet updatedWallet = Wallet.builder()
-        .id(WALLET_ID)
+        .id(walletId)
         .name("Updated Wallet")
         .balance(BigDecimal.valueOf(2000))
         .walletType(CARD)
@@ -153,13 +158,15 @@ class WalletServiceTest {
         .user(testUser)
         .build();
 
-    when(walletRepository.findByIdAndUserId(WALLET_ID, USER_ID))
-        .thenReturn(Optional.of(testWallet));
-    doNothing().when(walletMapper).updateWalletFromDto(updatedWalletDto, testWallet);
-    when(walletRepository.save(testWallet)).thenReturn(updatedWallet);
-    when(walletMapper.toDto(updatedWallet)).thenReturn(updatedWalletDto);
+    WalletListDto updatedListDto = getExpectedDto(updatedDto);
 
-    WalletDto result = walletService.updateWallet(USER_ID, WALLET_ID, updatedWalletDto);
+    when(walletRepository.findByIdAndUserId(walletId, userId))
+        .thenReturn(Optional.of(testWallet));
+    doNothing().when(walletMapper).updateWalletFromDto(updatedDto, testWallet);
+    when(walletRepository.save(testWallet)).thenReturn(updatedWallet);
+    when(walletMapper.toListDto(updatedWallet)).thenReturn(updatedListDto);
+
+    WalletListDto result = walletService.updateWallet(userId, walletId, updatedDto);
 
     assertNotNull(result);
     assertEquals("Updated Wallet", result.getName());
@@ -167,24 +174,24 @@ class WalletServiceTest {
     assertEquals(CARD, result.getWalletType());
     assertEquals(EUR, result.getCurrency());
 
-    verify(walletRepository).findByIdAndUserId(WALLET_ID, USER_ID);
-    verify(walletMapper).updateWalletFromDto(updatedWalletDto, testWallet);
+    verify(walletRepository).findByIdAndUserId(walletId, userId);
+    verify(walletMapper).updateWalletFromDto(updatedDto, testWallet);
     verify(walletRepository).save(testWallet);
-    verify(walletMapper).toDto(updatedWallet);
+    verify(walletMapper).toListDto(updatedWallet);
   }
 
   @Test
   @DisplayName("Should throw EntityNotFoundException when updating non-existent wallet")
   void updateWallet_ShouldThrowException_WhenWalletNotFound() {
-    when(walletRepository.findByIdAndUserId(WALLET_ID, USER_ID))
+    when(walletRepository.findByIdAndUserId(walletId, userId))
         .thenReturn(Optional.empty());
 
     assertThrows(
         EntityNotFoundException.class,
-        () -> walletService.updateWallet(USER_ID, WALLET_ID, testWalletDto)
+        () -> walletService.updateWallet(userId, walletId, testWalletCreateDto)
     );
 
-    verify(walletRepository).findByIdAndUserId(WALLET_ID, USER_ID);
+    verify(walletRepository).findByIdAndUserId(walletId, userId);
     verify(walletMapper, never()).updateWalletFromDto(any(), any());
     verify(walletRepository, never()).save(any());
   }
@@ -192,29 +199,29 @@ class WalletServiceTest {
   @Test
   @DisplayName("Should return success message when deleting wallet")
   void deleteWallet_ShouldReturnSuccessMessage_WhenWalletExists() {
-    when(walletRepository.findByIdAndUserId(WALLET_ID, USER_ID))
+    when(walletRepository.findByIdAndUserId(walletId, userId))
         .thenReturn(Optional.of(testWallet));
     doNothing().when(walletRepository).delete(testWallet);
 
-    String result = walletService.deleteWallet(USER_ID, WALLET_ID);
+    String result = walletService.deleteWallet(userId, walletId);
 
-    assertEquals("Wallet with id %s deleted".formatted(WALLET_ID), result);
-    verify(walletRepository).findByIdAndUserId(WALLET_ID, USER_ID);
+    assertEquals("Wallet with id %s deleted".formatted(walletId), result);
+    verify(walletRepository).findByIdAndUserId(walletId, userId);
     verify(walletRepository).delete(testWallet);
   }
 
   @Test
   @DisplayName("Should throw EntityNotFoundException when deleting non-existent wallet")
   void deleteWallet_ShouldThrowException_WhenWalletNotFound() {
-    when(walletRepository.findByIdAndUserId(WALLET_ID, USER_ID))
+    when(walletRepository.findByIdAndUserId(walletId, userId))
         .thenReturn(Optional.empty());
 
     assertThrows(
         EntityNotFoundException.class,
-        () -> walletService.deleteWallet(USER_ID, WALLET_ID)
+        () -> walletService.deleteWallet(userId, walletId)
     );
 
-    verify(walletRepository).findByIdAndUserId(WALLET_ID, USER_ID);
+    verify(walletRepository).findByIdAndUserId(walletId, userId);
     verify(walletRepository, never()).delete(any());
   }
 
@@ -230,40 +237,43 @@ class WalletServiceTest {
         .user(testUser)
         .build();
 
-    WalletDto walletDto2 = new WalletDto();
-    walletDto2.setName("Second Wallet");
-    walletDto2.setBalance(new BigDecimal(500));
-    walletDto2.setWalletType(CARD);
-    walletDto2.setCurrency(USD);
+    WalletListDto walletCreateDto2 = new WalletListDto();
+    walletCreateDto2.setName("Second Wallet");
+    walletCreateDto2.setBalance(new BigDecimal(500));
+    walletCreateDto2.setWalletType(CARD);
+    walletCreateDto2.setCurrency(USD);
 
     List<Wallet> wallets = List.of(testWallet, wallet2);
 
-    when(walletRepository.findAllByUserId(USER_ID)).thenReturn(wallets);
-    when(walletMapper.toDto(testWallet)).thenReturn(testWalletDto);
-    when(walletMapper.toDto(wallet2)).thenReturn(walletDto2);
+    when(walletRepository.findAllByUserId(userId)).thenReturn(wallets);
+    
+    WalletListDto firstWalletDto = getExpectedDto(testWalletCreateDto);
+    
+    when(walletMapper.toListDto(testWallet)).thenReturn(firstWalletDto);
+    when(walletMapper.toListDto(wallet2)).thenReturn(walletCreateDto2);
 
-    List<WalletDto> result = walletService.getWalletsByUserId(USER_ID);
+    List<WalletListDto> result = walletService.getWalletsByUserId(userId);
 
     assertNotNull(result);
     assertEquals(2, result.size());
-    assertEquals(WALLET_NAME, result.get(0).getName());
+    assertEquals(walletName, result.get(0).getName());
     assertEquals("Second Wallet", result.get(1).getName());
 
-    verify(walletRepository).findAllByUserId(USER_ID);
-    verify(walletMapper, times(2)).toDto(any(Wallet.class));
+    verify(walletRepository).findAllByUserId(userId);
+    verify(walletMapper, times(2)).toListDto(any(Wallet.class));
   }
 
   @Test
   @DisplayName("Should return empty list when user has no wallets")
   void getWalletsByUser_ShouldReturnEmptyList_WhenUserHasNoWalletsId() {
-    when(walletRepository.findAllByUserId(USER_ID)).thenReturn(List.of());
+    when(walletRepository.findAllByUserId(userId)).thenReturn(List.of());
 
-    List<WalletDto> result = walletService.getWalletsByUserId(USER_ID);
+    List<WalletListDto> result = walletService.getWalletsByUserId(userId);
 
     assertNotNull(result);
     assertEquals(0, result.size());
-    verify(walletRepository).findAllByUserId(USER_ID);
-    verify(walletMapper, never()).toDto(any());
+    verify(walletRepository).findAllByUserId(userId);
+    verify(walletMapper, never()).toListDto(any());
   }
 
   @Test
@@ -271,25 +281,36 @@ class WalletServiceTest {
   void getTotalBalanceByUser_ShouldReturnTotalBalance_WhenUserIdHasWallets() {
     BigDecimal expectedTotal = BigDecimal.valueOf(1500.00);
 
-    when(walletRepository.getTotalBalanceByUserId(USER_ID)).thenReturn(expectedTotal);
+    when(walletRepository.getTotalBalanceByUserId(userId)).thenReturn(expectedTotal);
 
-    BigDecimal result = walletService.getTotalBalanceByUserId(USER_ID);
+    BigDecimal result = walletService.getTotalBalanceByUserId(userId);
 
     assertNotNull(result);
     assertEquals(expectedTotal, result);
-    verify(walletRepository).getTotalBalanceByUserId(USER_ID);
+    verify(walletRepository).getTotalBalanceByUserId(userId);
   }
 
   @Test
   @DisplayName("Should return zero balance when user has no wallets")
   void getTotalBalanceByUser_ShouldReturnZero_WhenUserIdHasNoWallets() {
     BigDecimal expectedTotal = ZERO;
-    when(walletRepository.getTotalBalanceByUserId(USER_ID)).thenReturn(expectedTotal);
+    when(walletRepository.getTotalBalanceByUserId(userId)).thenReturn(expectedTotal);
 
-    BigDecimal result = walletService.getTotalBalanceByUserId(USER_ID);
+    BigDecimal result = walletService.getTotalBalanceByUserId(userId);
 
     assertNotNull(result);
     assertEquals(expectedTotal, result);
-    verify(walletRepository).getTotalBalanceByUserId(USER_ID);
+    verify(walletRepository).getTotalBalanceByUserId(userId);
+  }
+
+  private WalletListDto getExpectedDto(WalletCreateDto createDto) {
+    WalletListDto listDto = new WalletListDto();
+    listDto.setId(walletId);
+    listDto.setName(createDto.getName());
+    listDto.setBalance(createDto.getBalance());
+    listDto.setWalletType(createDto.getWalletType());
+    listDto.setCurrency(createDto.getCurrency());
+
+    return listDto;
   }
 }
