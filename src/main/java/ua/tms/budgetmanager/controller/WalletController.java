@@ -25,12 +25,12 @@ public class WalletController {
 
   @GetMapping
   public ResponseEntity<?> getWalletsByUser(@AuthenticationPrincipal final User user) {
-    return ResponseEntity.ok(walletService.getWalletsByUser(user));
+    return ResponseEntity.ok(walletService.getWalletsByUserId(user.getId()));
   }
 
   @GetMapping("/total-balance")
   public ResponseEntity<?> getTotalBalanceByUser(@AuthenticationPrincipal final User user) {
-    return ResponseEntity.ok(walletService.getTotalBalanceByUser(user));
+    return ResponseEntity.ok(walletService.getTotalBalanceByUserId(user.getId()));
   }
 
   @PostMapping
@@ -47,7 +47,7 @@ public class WalletController {
       @PathVariable final Long walletId,
       @RequestBody @Valid final WalletDto walletDto
   ) {
-    return ResponseEntity.ok(walletService.updateWallet(user, walletId, walletDto));
+    return ResponseEntity.ok(walletService.updateWallet(user.getId(), walletId, walletDto));
   }
 
   @DeleteMapping("/{walletId}")
@@ -55,6 +55,6 @@ public class WalletController {
       @AuthenticationPrincipal final User user,
       @PathVariable final Long walletId
   ) {
-    return ResponseEntity.ok(walletService.deleteWallet(user, walletId));
+    return ResponseEntity.ok(walletService.deleteWallet(user.getId(), walletId));
   }
 }

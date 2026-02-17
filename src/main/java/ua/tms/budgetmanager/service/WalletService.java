@@ -28,27 +28,27 @@ public class WalletService {
     return walletMapper.toDto(walletRepository.save(walletMapper.toModel(walletDto, user)));
   }
 
-  public WalletDto updateWallet(final User user, final Long walletId, final WalletDto walletDto) {
-    Wallet wallet = getByUserIdAndWalletId(user.getId(), walletId);
+  public WalletDto updateWallet(final Long userId, final Long walletId, final WalletDto walletDto) {
+    Wallet wallet = getByUserIdAndWalletId(userId, walletId);
     walletMapper.updateWalletFromDto(walletDto, wallet);
 
     return walletMapper.toDto(walletRepository.save(wallet));
   }
 
-  public String deleteWallet(final User user, final Long walletId) {
-    Wallet wallet = getByUserIdAndWalletId(user.getId(), walletId);
+  public String deleteWallet(final Long userId, final Long walletId) {
+    Wallet wallet = getByUserIdAndWalletId(userId, walletId);
     walletRepository.delete(wallet);
 
     return "Wallet with id %s deleted".formatted(walletId);
   }
 
-  public List<WalletDto> getWalletsByUser(final User user) {
-    return walletRepository.findAllByUserId(user.getId()).stream()
+  public List<WalletDto> getWalletsByUserId(final Long userId) {
+    return walletRepository.findAllByUserId(userId).stream()
         .map(walletMapper::toDto)
         .toList();
   }
 
-  public BigDecimal getTotalBalanceByUser(final User user) {
-    return walletRepository.getTotalBalanceByUserId(user.getId());
+  public BigDecimal getTotalBalanceByUserId(final Long userId) {
+    return walletRepository.getTotalBalanceByUserId(userId);
   }
 }

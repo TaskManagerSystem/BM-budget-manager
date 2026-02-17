@@ -159,7 +159,7 @@ class WalletServiceTest {
     when(walletRepository.save(testWallet)).thenReturn(updatedWallet);
     when(walletMapper.toDto(updatedWallet)).thenReturn(updatedWalletDto);
 
-    WalletDto result = walletService.updateWallet(testUser, WALLET_ID, updatedWalletDto);
+    WalletDto result = walletService.updateWallet(USER_ID, WALLET_ID, updatedWalletDto);
 
     assertNotNull(result);
     assertEquals("Updated Wallet", result.getName());
@@ -181,7 +181,7 @@ class WalletServiceTest {
 
     assertThrows(
         EntityNotFoundException.class,
-        () -> walletService.updateWallet(testUser, WALLET_ID, testWalletDto)
+        () -> walletService.updateWallet(USER_ID, WALLET_ID, testWalletDto)
     );
 
     verify(walletRepository).findByIdAndUserId(WALLET_ID, USER_ID);
@@ -196,7 +196,7 @@ class WalletServiceTest {
         .thenReturn(Optional.of(testWallet));
     doNothing().when(walletRepository).delete(testWallet);
 
-    String result = walletService.deleteWallet(testUser, WALLET_ID);
+    String result = walletService.deleteWallet(USER_ID, WALLET_ID);
 
     assertEquals("Wallet with id %s deleted".formatted(WALLET_ID), result);
     verify(walletRepository).findByIdAndUserId(WALLET_ID, USER_ID);
@@ -211,7 +211,7 @@ class WalletServiceTest {
 
     assertThrows(
         EntityNotFoundException.class,
-        () -> walletService.deleteWallet(testUser, WALLET_ID)
+        () -> walletService.deleteWallet(USER_ID, WALLET_ID)
     );
 
     verify(walletRepository).findByIdAndUserId(WALLET_ID, USER_ID);
@@ -220,7 +220,7 @@ class WalletServiceTest {
 
   @Test
   @DisplayName("Should return list of wallet DTOs when getting wallets by user")
-  void getWalletsByUser_ShouldReturnWalletDtoList_WhenUserHasWallets() {
+  void getWalletsByUser_ShouldReturnWalletDtoList_WhenUserHasWalletsId() {
     Wallet wallet2 = Wallet.builder()
         .id(2L)
         .name("Second Wallet")
@@ -242,7 +242,7 @@ class WalletServiceTest {
     when(walletMapper.toDto(testWallet)).thenReturn(testWalletDto);
     when(walletMapper.toDto(wallet2)).thenReturn(walletDto2);
 
-    List<WalletDto> result = walletService.getWalletsByUser(testUser);
+    List<WalletDto> result = walletService.getWalletsByUserId(USER_ID);
 
     assertNotNull(result);
     assertEquals(2, result.size());
@@ -255,10 +255,10 @@ class WalletServiceTest {
 
   @Test
   @DisplayName("Should return empty list when user has no wallets")
-  void getWalletsByUser_ShouldReturnEmptyList_WhenUserHasNoWallets() {
+  void getWalletsByUser_ShouldReturnEmptyList_WhenUserHasNoWalletsId() {
     when(walletRepository.findAllByUserId(USER_ID)).thenReturn(List.of());
 
-    List<WalletDto> result = walletService.getWalletsByUser(testUser);
+    List<WalletDto> result = walletService.getWalletsByUserId(USER_ID);
 
     assertNotNull(result);
     assertEquals(0, result.size());
@@ -268,12 +268,12 @@ class WalletServiceTest {
 
   @Test
   @DisplayName("Should return total balance when getting total balance by user")
-  void getTotalBalanceByUser_ShouldReturnTotalBalance_WhenUserHasWallets() {
+  void getTotalBalanceByUser_ShouldReturnTotalBalance_WhenUserIdHasWallets() {
     BigDecimal expectedTotal = BigDecimal.valueOf(1500.00);
 
     when(walletRepository.getTotalBalanceByUserId(USER_ID)).thenReturn(expectedTotal);
 
-    BigDecimal result = walletService.getTotalBalanceByUser(testUser);
+    BigDecimal result = walletService.getTotalBalanceByUserId(USER_ID);
 
     assertNotNull(result);
     assertEquals(expectedTotal, result);
@@ -282,11 +282,11 @@ class WalletServiceTest {
 
   @Test
   @DisplayName("Should return zero balance when user has no wallets")
-  void getTotalBalanceByUser_ShouldReturnZero_WhenUserHasNoWallets() {
+  void getTotalBalanceByUser_ShouldReturnZero_WhenUserIdHasNoWallets() {
     BigDecimal expectedTotal = ZERO;
     when(walletRepository.getTotalBalanceByUserId(USER_ID)).thenReturn(expectedTotal);
 
-    BigDecimal result = walletService.getTotalBalanceByUser(testUser);
+    BigDecimal result = walletService.getTotalBalanceByUserId(USER_ID);
 
     assertNotNull(result);
     assertEquals(expectedTotal, result);
