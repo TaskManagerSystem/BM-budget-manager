@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ua.tms.budgetmanager.data.dto.transaction.TransactionCreateDto;
+import ua.tms.budgetmanager.data.dto.transaction.TransactionTransferDto;
 import ua.tms.budgetmanager.data.model.User;
 import ua.tms.budgetmanager.service.TransactionService;
 
@@ -38,6 +39,12 @@ public class TransactionController {
       @RequestBody @Valid final TransactionCreateDto transactionCreateDto
   ) {
     return ResponseEntity.ok(transactionService.createTransaction(user.getId(),  walletId, transactionCreateDto));
+  }
+
+  @PostMapping("/transfer")
+  public ResponseEntity<?> createTransfer(@AuthenticationPrincipal final User user,
+                                          @RequestBody final TransactionTransferDto transactionTransferDto) {
+    return ResponseEntity.ok(transactionService.createTransferTransaction(user.getId(), transactionTransferDto));
   }
 
   @PutMapping("/{transactionId}")

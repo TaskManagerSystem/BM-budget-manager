@@ -21,6 +21,7 @@ public enum TransactionCategory implements Serializable {
     return switch (type) {
       case INCOME -> List.of(SALARY, OTHER);
       case EXPENSE -> List.of(LIVING, FOOD, TRANSPORT, ENTERTAINMENT, HEALTH, SHOPPING, OTHER);
+      case TRANSFER ->List.of(OTHER);
     };
   }
 }
