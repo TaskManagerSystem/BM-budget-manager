@@ -5,7 +5,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ua.tms.budgetmanager.data.dto.WalletDto;
+import ua.tms.budgetmanager.data.dto.wallet.WalletCreateDto;
+import ua.tms.budgetmanager.data.dto.wallet.WalletDetailsDto;
+import ua.tms.budgetmanager.data.dto.wallet.WalletListDto;
 import ua.tms.budgetmanager.data.model.User;
 import ua.tms.budgetmanager.data.model.Wallet;
 import ua.tms.budgetmanager.mapper.WalletMapper;
@@ -24,15 +26,19 @@ public class WalletService {
     );
   }
 
-  public WalletDto createWallet(final User user, final WalletDto walletDto) {
-    return walletMapper.toDto(walletRepository.save(walletMapper.toModel(walletDto, user)));
+  public WalletDetailsDto getWalletDetailsById(final Long userId, final Long walletId) {
+    return walletMapper.toDetailsDto(getByUserIdAndWalletId(userId, walletId));
   }
 
-  public WalletDto updateWallet(final Long userId, final Long walletId, final WalletDto walletDto) {
-    Wallet wallet = getByUserIdAndWalletId(userId, walletId);
-    walletMapper.updateWalletFromDto(walletDto, wallet);
+  public WalletListDto createWallet(final User user, final WalletCreateDto walletCreateDto) {
+    return walletMapper.toListDto(walletRepository.save(walletMapper.toModel(walletCreateDto, user)));
+  }
 
-    return walletMapper.toDto(walletRepository.save(wallet));
+  public WalletListDto updateWallet(final Long userId, final Long walletId, final WalletCreateDto walletCreateDto) {
+    Wallet wallet = getByUserIdAndWalletId(userId, walletId);
+    walletMapper.updateWalletFromDto(walletCreateDto, wallet);
+
+    return walletMapper.toListDto(walletRepository.save(wallet));
   }
 
   public String deleteWallet(final Long userId, final Long walletId) {
@@ -42,9 +48,9 @@ public class WalletService {
     return "Wallet with id %s deleted".formatted(walletId);
   }
 
-  public List<WalletDto> getWalletsByUserId(final Long userId) {
+  public List<WalletListDto> getWalletsByUserId(final Long userId) {
     return walletRepository.findAllByUserId(userId).stream()
-        .map(walletMapper::toDto)
+        .map(walletMapper::toListDto)
         .toList();
   }
 
