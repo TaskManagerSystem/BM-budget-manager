@@ -66,16 +66,15 @@ public class TransactionService {
         final long fromWalletId = transactionTransferDto.getFromWallet();
         final long toWalletId = transactionTransferDto.getToWallet();
 
-        TransactionCreateDto createTransactionFrom = createTransactionDto(transactionTransferDto);
+        TransactionCreateDto createTransaction = createTransactionDto(transactionTransferDto);
 
         Wallet fromWallet = getWallet(userId, fromWalletId);
         walletService.decreaseBalance(userId, transactionTransferDto);
-        transactionRepository.save(transactionMapper.toModel(createTransactionFrom, fromWallet));
+        transactionRepository.save(transactionMapper.toModel(createTransaction, fromWallet));
 
-        TransactionCreateDto createTransactionTo = createTransactionDto(transactionTransferDto);
         Wallet toWallet = getWallet(userId, toWalletId);
         walletService.increaseBalance(userId, transactionTransferDto);
-        transactionRepository.save(transactionMapper.toModel(createTransactionTo, toWallet));
+        transactionRepository.save(transactionMapper.toModel(createTransaction, toWallet));
 
         return "Transfer from wallet %s to wallet %s was successful".formatted(fromWallet, toWallet);
     }
