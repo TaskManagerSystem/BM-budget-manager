@@ -18,10 +18,17 @@ import ua.tms.budgetmanager.data.model.Wallet;
 import ua.tms.budgetmanager.mapper.TransactionMapper;
 import ua.tms.budgetmanager.repository.TransactionRepository;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static ua.tms.budgetmanager.data.enumariton.TransactionCategory.FOOD;
 import static ua.tms.budgetmanager.data.enumariton.TransactionType.EXPENSE;
 
@@ -321,8 +328,8 @@ class TransactionServiceTest extends BaseUtilTest {
     assertTrue(result.contains("was successful"));
 
     // Перевіряємо виклики сервісів оновлення балансу
-    verify(walletService).decreaseBalance(userId, dto);
-    verify(walletService).increaseBalance(userId, dto);
+    verify(walletService).decreaseBalance(userId, dto.getFromWallet(), dto.getAmount());
+    verify(walletService).increaseBalance(userId, dto.getToWallet(), dto.getAmount());
 
     // Перевіряємо, що збережено 2 записи історії
     verify(transactionRepository, times(2)).save(any(Transaction.class));

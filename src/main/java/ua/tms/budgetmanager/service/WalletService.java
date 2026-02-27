@@ -6,7 +6,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.tms.budgetmanager.data.dto.transaction.TransactionTransferDto;
 import ua.tms.budgetmanager.data.dto.wallet.WalletCreateDto;
 import ua.tms.budgetmanager.data.dto.wallet.WalletDetailsDto;
 import ua.tms.budgetmanager.data.dto.wallet.WalletListDto;
@@ -26,6 +25,10 @@ public class WalletService {
         return walletRepository.findByIdAndUserId(walletId, userId).orElseThrow(() ->
                 new EntityNotFoundException("Wallet with id %s for user with id %s not found".formatted(walletId, userId))
         );
+    }
+
+    public Wallet save(final Wallet wallet) {
+        return walletRepository.save(wallet);
     }
 
     public WalletDetailsDto getWalletDetailsById(final Long userId, final Long walletId) {
@@ -60,17 +63,20 @@ public class WalletService {
         return walletRepository.getTotalBalanceByUserId(userId);
     }
 
+    //Better update wallet balance using Wallet.applyTransaction method and then save
+    @Deprecated
     @Transactional(rollbackFor = Exception.class)
-    public void decreaseBalance(final Long userId, final TransactionTransferDto transactionTransferDto) {
-        int updatedRows = walletRepository.decreaseBalance(transactionTransferDto.getFromWallet(), userId, transactionTransferDto.getAmount());
+    public void decreaseBalance(final Long userId, final Long walletId, final BigDecimal amount) {
+        int updatedRows = walletRepository.decreaseBalance(walletId, userId, amount);
         if (updatedRows == 0) {
             throw new RuntimeException("Unable to write off the amount");
         }
     }
 
+    @Deprecated
     @Transactional
-    public void increaseBalance(final Long userId, final TransactionTransferDto transactionTransferDto) {
-        int updatedRows = walletRepository.increaseBalance(transactionTransferDto.getToWallet(), userId, transactionTransferDto.getAmount());
+    public void increaseBalance(final Long userId, final Long walletId, final BigDecimal amount) {
+        int updatedRows = walletRepository.increaseBalance(walletId, userId, amount);
         if (updatedRows == 0) {
             throw new RuntimeException("Unable to deposit funds");
         }
