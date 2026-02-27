@@ -17,12 +17,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ua.tms.budgetmanager.data.enumariton.Currency;
+import ua.tms.budgetmanager.data.enumariton.TransactionType;
 import ua.tms.budgetmanager.data.enumariton.WalletType;
 
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static ua.tms.budgetmanager.data.enumariton.TransactionType.INCOME;
 
 @Data
 @Builder
@@ -56,4 +58,21 @@ public class Wallet implements Serializable {
 
   @OneToMany(mappedBy = "wallet", cascade = ALL, fetch = LAZY)
   private List<Transaction> transactions;
+
+  public void applyTransaction(final BigDecimal amount, final TransactionType type) {
+    if (type == INCOME) {
+      this.balance = this.balance.add(amount);
+      //TODO: Reconsider represent TRANSFER type separated from INCOME and EXPENSE
+    } else {
+      this.balance = this.balance.subtract(amount);
+    }
+  }
+
+  public void revertTransaction(final BigDecimal amount, final TransactionType type) {
+    if (type == INCOME) {
+      this.balance = this.balance.subtract(amount);
+    } else {
+      this.balance = this.balance.add(amount);
+    }
+  }
 }

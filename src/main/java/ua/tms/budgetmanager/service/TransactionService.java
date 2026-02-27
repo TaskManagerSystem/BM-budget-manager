@@ -28,34 +28,44 @@ public class TransactionService {
         );
     }
 
+    @Transactional
     public TransactionResponseDto createTransaction(
             final Long userId,
             final Long walletId,
             final TransactionCreateDto dto
     ) {
         Wallet wallet = walletService.getByUserIdAndWalletId(userId, walletId);
+        wallet.applyTransaction(dto.getAmount(), dto.getType());
+        walletService.save(wallet);
 
         return transactionMapper.toResponseDto(transactionRepository.save(transactionMapper.toModel(dto, wallet)));
     }
 
+    @Transactional
     public TransactionResponseDto updateTransaction(
             final Long userId,
             final Long walletId,
             final Long transactionId,
             final TransactionCreateDto dto
     ) {
-        walletService.getByUserIdAndWalletId(userId, walletId);
+        Wallet wallet = walletService.getByUserIdAndWalletId(userId, walletId);
 
         Transaction transaction = getByWalletIdAndTransactionId(walletId, transactionId);
         transactionMapper.updateTransactionFromDto(dto, transaction);
 
+        wallet.revertTransaction(transaction.getAmount(), transaction.getType());
+        wallet.applyTransaction(dto.getAmount(), dto.getType());
+        walletService.save(wallet);
+
         return transactionMapper.toResponseDto(transactionRepository.save(transaction));
     }
 
+    @Transactional
     public String deleteTransaction(final Long userId, final Long walletId, final Long transactionId) {
-        walletService.getByUserIdAndWalletId(userId, walletId);
+        Wallet wallet = walletService.getByUserIdAndWalletId(userId, walletId);
 
         Transaction transaction = getByWalletIdAndTransactionId(walletId, transactionId);
+        wallet.revertTransaction(transaction.getAmount(), transaction.getType());
         transactionRepository.delete(transaction);
 
         return "Transaction with id %s deleted".formatted(transactionId);
@@ -69,17 +79,18 @@ public class TransactionService {
         TransactionCreateDto createTransactionFrom = createTransactionDto(transactionTransferDto);
 
         Wallet fromWallet = getWallet(userId, fromWalletId);
-        walletService.decreaseBalance(userId, transactionTransferDto);
+        walletService.decreaseBalance(userId, fromWalletId, transactionTransferDto.getAmount());
         transactionRepository.save(transactionMapper.toModel(createTransactionFrom, fromWallet));
 
         TransactionCreateDto createTransactionTo = createTransactionDto(transactionTransferDto);
         Wallet toWallet = getWallet(userId, toWalletId);
-        walletService.increaseBalance(userId, transactionTransferDto);
+        walletService.increaseBalance(userId, toWalletId, transactionTransferDto.getAmount());
         transactionRepository.save(transactionMapper.toModel(createTransactionTo, toWallet));
 
         return "Transfer from wallet %s to wallet %s was successful".formatted(fromWallet, toWallet);
     }
 
+    //Do we really need this method here?
     private Wallet getWallet(final long userId, final long walletId) {
         return walletService.getByUserIdAndWalletId(userId, walletId);
     }
