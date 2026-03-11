@@ -12,19 +12,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ua.tms.budgetmanager.data.dto.transaction.TransactionCreateDto;
 import ua.tms.budgetmanager.data.dto.transaction.TransactionResponseDto;
+import ua.tms.budgetmanager.data.dto.transaction.TransactionTransferDto;
 import ua.tms.budgetmanager.data.model.Transaction;
 import ua.tms.budgetmanager.data.model.Wallet;
 import ua.tms.budgetmanager.mapper.TransactionMapper;
 import ua.tms.budgetmanager.repository.TransactionRepository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static ua.tms.budgetmanager.data.enumariton.TransactionCategory.FOOD;
 import static ua.tms.budgetmanager.data.enumariton.TransactionType.EXPENSE;
 
@@ -45,6 +42,7 @@ class TransactionServiceTest extends BaseUtilTest {
   private TransactionService transactionService;
 
   private Wallet testWallet;
+  private Wallet testWalletTo;
   private Transaction testTransaction;
   private TransactionCreateDto testTransactionCreateDto;
   private TransactionResponseDto testTransactionResponseDto;
@@ -56,6 +54,12 @@ class TransactionServiceTest extends BaseUtilTest {
         .name("Test Wallet")
         .balance(BigDecimal.valueOf(1000))
         .build();
+
+    testWalletTo = Wallet.builder()
+            .id(walletIdTo)
+            .name("Wallet To")
+            .balance(BigDecimal.valueOf(500))
+            .build();
 
     testTransaction = Transaction.builder()
         .id(transactionId)
@@ -289,4 +293,39 @@ class TransactionServiceTest extends BaseUtilTest {
     verify(transactionRepository).findByIdAndWalletId(transactionId, walletId);
     verify(transactionRepository, never()).delete(any());
   }
+
+  @Test
+  @DisplayName("Should successfully transfer money and save two transactions")
+  void createTransferTransaction_Success() {
+    // Given
+    BigDecimal amount = BigDecimal.valueOf(100);
+    TransactionTransferDto dto = new TransactionTransferDto(walletId, walletIdTo, amount, "Gift");
+
+    Wallet fromWallet = new Wallet();
+    fromWallet.setId(walletId);
+    Wallet toWallet = new Wallet();
+    toWallet.setId(2L);
+
+    // Імітуємо отримання гаманців (getWallet)
+    when(walletService.getByUserIdAndWalletId(userId, walletId)).thenReturn(fromWallet);
+    when(walletService.getByUserIdAndWalletId(userId, 2L)).thenReturn(toWallet);
+
+    // Імітуємо мапінг
+    when(transactionMapper.toModel(any(), eq(fromWallet))).thenReturn(new Transaction());
+    when(transactionMapper.toModel(any(), eq(toWallet))).thenReturn(new Transaction());
+
+    // When
+    String result = transactionService.createTransferTransaction(userId, dto);
+
+    // Then
+    assertTrue(result.contains("was successful"));
+
+    // Перевіряємо виклики сервісів оновлення балансу
+    verify(walletService).decreaseBalance(userId, dto);
+    verify(walletService).increaseBalance(userId, dto);
+
+    // Перевіряємо, що збережено 2 записи історії
+    verify(transactionRepository, times(2)).save(any(Transaction.class));
+  }
+
 }

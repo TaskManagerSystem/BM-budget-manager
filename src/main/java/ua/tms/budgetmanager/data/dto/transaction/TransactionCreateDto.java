@@ -4,11 +4,17 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ua.tms.budgetmanager.data.enumariton.TransactionCategory;
 import ua.tms.budgetmanager.data.enumariton.TransactionType;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TransactionCreateDto {
 
   @NotNull(message = "Amount is required")
