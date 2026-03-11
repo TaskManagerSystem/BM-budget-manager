@@ -1,0 +1,89 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0002-insert-wallets-data
+      author: yourname
+      changes:
+        - insert:
+            tableName: wallets
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: name
+                  value: "John's Cash Wallet"
+              - column:
+                  name: balance
+                  value: 1500.00
+              - column:
+                  name: wallet_type
+                  value: CASH
+              - column:
+                  name: currency
+                  value: USD
+              - column:
+                  name: user_id
+                  value: 1
+        - insert:
+            tableName: wallets
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: name
+                  value: "John's Card Wallet"
+              - column:
+                  name: balance
+                  value: 800.00
+              - column:
+                  name: wallet_type
+                  value: CARD
+              - column:
+                  name: currency
+                  value: UAH
+              - column:
+                  name: user_id
+                  value: 1
+        - insert:
+            tableName: wallets
+            columns:
+              - column:
+                  name: id
+                  value: 3
+              - column:
+                  name: name
+                  value: "Jane's Cash Wallet"
+              - column:
+                  name: balance
+                  value: 3200.50
+              - column:
+                  name: wallet_type
+                  value: CASH
+              - column:
+                  name: currency
+                  value: EUR
+              - column:
+                  name: user_id
+                  value: 2
+        - insert:
+            tableName: wallets
+            columns:
+              - column:
+                  name: id
+                  value: 4
+              - column:
+                  name: name
+                  value: "Jane's Card Wallet"
+              - column:
+                  name: balance
+                  value: 950.75
+              - column:
+                  name: wallet_type
+                  value: CARD
+              - column:
+                  name: currency
+                  value: UAH
+              - column:
+                  name: user_id
+                  value: 2
