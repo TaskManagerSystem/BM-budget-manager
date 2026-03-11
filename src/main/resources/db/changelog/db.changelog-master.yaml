@@ -2,4 +2,16 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/user/0001-create-user-table-user-role-table.yaml
   - include:
-      file: db/changelog/changes/wallets/0002-create-wallets-and-transactions-tables.yaml
+      file: db/changelog/changes/wallets/0001-create-wallets-and-transactions-tables.yaml
+  - include:
+      file: db/changelog/changes/user/0002-insert-users-data.yml
+  - include:
+      file: db/changelog/changes/wallets/0002-insert-data-into-wallets-table.yml
+  - include:
+      file: db/changelog/changes/transactions/0002-insert-data-into-transaction.yml
+  - include:
+      file: db/changelog/changes/transactions/0003-insert-data-into-transactions.yml
+  - include:
+      file: db/changelog/changes/transactions/0004-insert-data-into-transactions.yml
+  - include:
+      file: db/changelog/changes/transactions/0005-inserta-data-into-transactions.yml

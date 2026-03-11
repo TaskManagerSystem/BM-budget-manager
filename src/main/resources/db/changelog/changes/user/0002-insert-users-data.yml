@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0002-insert-users-data
+      author: yourname
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: username
+                  value: john_doe
+              - column:
+                  name: password
+                  value: "$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: username
+                  value: jane_smith
+              - column:
+                  name: password
+                  value: "$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG"
